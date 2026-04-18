@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: rss-bot
+    env: docker
+    region: frankfurt # or your preferred region
+    plan: free # or starter / standard
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /dashboard # or another public endpoint
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Add other necessary config parameters here
+      # depending on your .env needs
+    disk:
+      name: data-storage
+      mountPath: /app/data
+      sizeGB: 1
