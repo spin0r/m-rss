@@ -137,13 +137,22 @@ export const sendFeed = async (
         const options: Intl.DateTimeFormatOptions = {
           timeZone: "Asia/Kolkata",
           year: "numeric",
-          month: "long",
-          day: "numeric",
+          month: "2-digit",
+          day: "2-digit",
           hour: "2-digit",
           minute: "2-digit",
-          hour12: true,
+          hour12: false,
         };
-        return date.toLocaleString("en-US", options).replace(" at ", " at ");
+        const formatter = new Intl.DateTimeFormat("en-GB", options);
+        const parts = formatter.formatToParts(date);
+        
+        const day = parts.find(p => p.type === "day")?.value;
+        const month = parts.find(p => p.type === "month")?.value;
+        const year = parts.find(p => p.type === "year")?.value;
+        const hour = parts.find(p => p.type === "hour")?.value;
+        const minute = parts.find(p => p.type === "minute")?.value;
+        
+        return `${day}.${month}.${year} ${hour}:${minute}`;
       };
 
       let readyCaption: string = "";
@@ -180,16 +189,6 @@ export const sendFeed = async (
           await bot.telegram.sendMessage(channel.channel, readyCaption, {
             parse_mode: "HTML",
             link_preview_options: { is_disabled: true },
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: "View on Milkie",
-                    url: browseLink,
-                  },
-                ],
-              ],
-            },
           });
         } catch (error) {
           console.error("Error sending message:", error);
